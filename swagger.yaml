@@ -1,0 +1,594 @@
+openapi: 3.0.3
+info:
+  title: SGP Task Manager API
+  version: 1.0.0
+  description: |
+    ## A REST API built with Express and MongoDB. 
+    * This API allows users to authenticate and manage their tasks.
+    * It provides a secure user registration and login system which can persist the login state in the backend itself.
+    * Use `token` provided by [user signup](/#/Users/post_users) and [user login](#/Users/post_users_login) routes as Bearer token in request header.
+    * For testing purposes, click the `Authorize` button and paste the token as bearerAuth value to use the routes needing authentication.
+
+tags:
+  - name: "Users"
+    description: "Everything about User Accounts"
+  - name: "Tasks"
+    description: "Everything about user's Tasks"
+
+paths:
+  /users:
+    post:
+      tags:
+        - "Users"
+      consumes:
+        - application/json
+      requestBody:
+        content:
+          application/json:
+            name: user
+            description: new user data
+            required: true
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: johndoe@abc.com
+                name:
+                  type: string
+                  example: John Doe
+                password:
+                  type: string
+                  example: somepass
+                age:
+                  type: number
+                  example: 20
+      description: Signs up user and logs in the new user
+      summary: Signs up user
+      responses:
+        201:
+          description: Successful operation with JSON object containing user data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      age:
+                        type: number
+                        example: 20
+                      __id:
+                        type: string
+                        example: 60fd4a4ca9ed6c3a79dfa419
+                      name:
+                        type: string
+                        example: John Doe
+                      email:
+                        type: string
+                        example: johndoe@abc.com
+                      createdAt:
+                        type: string
+                        example: 2021-07-25T11:26:04.018Z
+                      updatedAt:
+                        type: string
+                        example: 2021-07-25T11:26:06.012Z
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MGZkNGE0Y2E5ZWQ2YzNhNzlkZmE0MTkiLCJpYXQiOjE2MjcyMTIzNjZ9.TdqgLCLPa_h7zZu9lejyVAYUx-AZ62Ky1562HWzh94A
+
+        400:
+          description: Unable to singup user
+
+  /users/login:
+    post:
+      tags:
+        - "Users"
+      consumes:
+        - application/json
+      requestBody:
+        content:
+          application/json:
+            name: user
+            description: new user data
+            required: true
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: johndoe@abc.com
+                password:
+                  type: string
+                  example: somepass
+      description: Logs in user
+      summary: Logs in user
+      responses:
+        200:
+          description: Successful operation with JSON object containing user data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      age:
+                        type: number
+                        example: 20
+                      __id:
+                        type: string
+                        example: 60fd4a4ca9ed6c3a79dfa419
+                      name:
+                        type: string
+                        example: John Doe
+                      email:
+                        type: string
+                        example: johndoe@abc.com
+                      createdAt:
+                        type: string
+                        example: 2021-07-25T11:26:04.018Z
+                      updatedAt:
+                        type: string
+                        example: 2021-07-25T11:26:06.012Z
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MGZkNGE0Y2E5ZWQ2YzNhNzlkZmE0MTkiLCJpYXQiOjE2MjcyMTIzNjZ9.TdqgLCLPa_h7zZu9lejyVAYUx-AZ62Ky1562HWzh94A
+        400:
+          description: Login unsuccessful
+
+  /users/{id}/avatar:
+    get:
+      tags:
+        - "Users"
+      summary: Gets a user's avatar image
+      description: >
+        Gets a user's avatar image based on User ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          description: The user ID
+          example: 60fd4a4ca9ed6c3a79dfa419
+      responses:
+        200:
+          description: Successfully obtained avatar image
+        404:
+          description: Avatar image not found
+
+  /users/me:
+    get:
+      tags:
+        - "Users"
+      description: Returns authenticated user
+      summary: Returns authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          $ref: "#/components/responses/UserData"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: Server error
+    patch:
+      security:
+        - bearerAuth: []
+      tags:
+        - "Users"
+      consumes:
+        - application/json
+      requestBody:
+        content:
+          application/json:
+            name: user
+            description: Updated user data (Requires atleast one of the use properties)
+            required: true
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: johndoe@abc.com
+                name:
+                  type: string
+                  example: John Doe
+                password:
+                  type: string
+                  example: somepass
+                age:
+                  type: number
+                  example: 20
+      description: Updates authenticated user's data
+      summary: Update user info.
+      responses:
+        200:
+          description: Update successful
+          $ref: "#/components/responses/UserData"
+        400:
+          description: Invalid operation
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+
+    delete:
+      tags:
+        - "Users"
+      description: Deletes authenticated user
+      summary: Deletes authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: User deleted successfully
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: Server error
+
+  /users/me/avatar:
+    post:
+      tags:
+        - "Users"
+      summary: Upload/Change user avatar
+      description: >
+        Upload user avatar of authenticated user.
+        Max. file upload size: 2MB
+        Supported types: JPG, JPEG, PNG
+        Preferred dimensions: 250x250 (if not then server converts image to these dimensions)
+      security:
+        - bearerAuth: []
+      consumes:
+        - "multipart/form-data"
+      produces:
+        - "application/json"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+                  required: true
+      responses:
+        200:
+          description: Successfully uploaded avatar image
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        400:
+          description: Could not upload avatar image
+    delete:
+      tags:
+        - "Users"
+      description: Deletes authenticated user's avatar image
+      summary: Deletes user avatar
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Avatar deleted successfully
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: Server error
+
+  /users/logout:
+    post:
+      tags:
+        - "Users"
+      description: Logs out user from current session based on client's bearer token.
+      summary: Logs out user from current session
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Successful logout
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: Server error
+
+  /users/logoutAll:
+    post:
+      tags:
+        - "Users"
+      description: Logs out user from all session depending on client's bearer token.
+      summary: Logs out user from all sessions
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Successful logout
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: Server error
+
+  /tasks:
+    post:
+      tags:
+        - "Tasks"
+      consumes:
+        - application/json
+      requestBody:
+        content:
+          application/json:
+            name: Task
+            description: new task data
+            required: true
+            schema:
+              type: object
+              required:
+                - description
+              properties:
+                description:
+                  type: string
+                  example: This is a Task
+                completed:
+                  type: boolean
+                  example: true
+                  default: false
+      description: Creates a new task for current user
+      summary: Creates a new task for current user
+      security:
+        - bearerAuth: []
+      responses:
+        201:
+          $ref: "#/components/responses/TaskData"
+        400:
+          description: Unable to create task
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+
+    get:
+      tags:
+        - "Tasks"
+      summary: Shows tasks created by current user
+      description: Shows tasks created by current user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: completed
+          schema:
+            type: boolean
+          description: If true, filters out incomplete tasks
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+            enum:
+              - createdAt_desc
+              - createdAt
+              - updatedAt
+              - updatedAt_desc
+          description: |
+            * `createdAt` sorts tasks by oldest creation time
+            * `createdAt_desc` sorts tasks by latest creation time
+            * `updatedAt` sorts tasks by oldest updatation time
+            * `updatedAt_desc` sorts tasks by latest updation time
+      responses:
+        200:
+          description: All tasks fetched successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    completed:
+                      type: boolean
+                    __id:
+                      type: string
+                    description:
+                      type: string
+                    owner:
+                      type: string
+                    createdAt:
+                      type: string
+                    updatedAt:
+                      type: string
+                example:
+                  [
+                    {
+                      "completed": true,
+                      "_id": "6149c3e3de5d6cc228e3d201",
+                      "description": "description one",
+                      "owner": "6149c3dade5d6cc228e3d1ff",
+                      "createdAt": "2021-09-21T11:37:07.896Z",
+                      "updatedAt": "2021-09-21T11:37:07.896Z",
+                    },
+                    {
+                      "completed": true,
+                      "_id": "6149c3f6de5d6cc228e3d202",
+                      "description": "description two",
+                      "owner": "6149c3dade5d6cc228e3d1ff",
+                      "createdAt": "2021-09-21T11:37:26.635Z",
+                      "updatedAt": "2021-09-21T11:37:26.635Z",
+                    },
+                  ]
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: Server error
+
+  /tasks/{id}:
+    get:
+      tags:
+        - "Tasks"
+      summary: Gets a specific task of current user
+      description: Gets a specific task based on task ID of authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          description: The task ID
+          example: 6149c3f6de5d6cc228e3d202
+
+      responses:
+        200:
+          $ref: "#/components/responses/TaskData"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: Server Error
+
+    patch:
+      tags:
+        - "Tasks"
+      summary: Updates task data of current user
+      description: Updates task data of authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          description: The task ID
+          example: 6149c3f6de5d6cc228e3d202
+      consumes:
+        - application/json
+      requestBody:
+        content:
+          application/json:
+            name: Task
+            description: Task data
+            required: true
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  example: This is a Task
+                completed:
+                  type: boolean
+                  example: true
+                  default: false
+      responses:
+        200:
+          $ref: "#/components/responses/TaskData"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        400:
+          description: Could not update the Task
+
+    delete:
+      tags:
+        - "Tasks"
+      summary: Deletes a Task of current user
+      description: Deletes task of authenticated user based on Task ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          description: The task ID
+          example: 6149c3f6de5d6cc228e3d202
+      responses:
+        200:
+          description: Task deleted successfully
+        404:
+          description: Task not found
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: Server error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Access token is missing/invalid or the user does not have access to perform the action
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Please authenticate"
+    NotFoundError:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Not Found"
+    UserData:
+      description: Successful operation with JSON object containing user data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              user:
+                type: object
+                properties:
+                  age:
+                    type: number
+                    example: 20
+                  __id:
+                    type: string
+                    example: 60fd4a4ca9ed6c3a79dfa419
+                  name:
+                    type: string
+                    example: John Doe
+                  email:
+                    type: string
+                    example: johndoe@abc.com
+                  createdAt:
+                    type: string
+                    example: 2021-07-25T11:26:04.018Z
+                  updatedAt:
+                    type: string
+                    example: 2021-07-25T11:26:06.012Z
+    TaskData:
+      description: Successful operation with JSON object containing user's task data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              completed:
+                type: boolean
+                example: true
+              __id:
+                type: string
+                example: 61498c3c7386f1e90212e52b
+              description:
+                type: string
+                example: This is a Task
+              owner:
+                type: string
+                example: 60fd4a4ca9ed6c3a79dfa419
+              createdAt:
+                type: string
+                example: 2021-07-25T11:26:04.018Z
+              updatedAt:
+                type: string
+                example: 2021-07-25T11:26:06.012Z
