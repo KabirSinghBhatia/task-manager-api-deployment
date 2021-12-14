@@ -10,7 +10,7 @@ services:
       TASK_HANDLER: ${TASK_HANDLER}
       TASK_HANDLER_PASSWORD: ${TASK_HANDLER_PASSWORD}
     volumes:
-      - ../mongo-entrypoint/:/docker-entrypoint-initdb.d/
+      - ./mongo-entrypoint/:/docker-entrypoint-initdb.d/
       - ../mongo-data:/data/db
 
   mongo-express:
