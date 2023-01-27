@@ -4,6 +4,9 @@ It is a RESTful Task Management API that allows authenticated users to perform C
 Read, Update & Delete) operations on their tasks along with documentation/testing interface for
 developers.
 
+## Demo Video
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/bC6pSfOrHEY/3.jpg)](https://www.youtube.com/watch?v=bC6pSfOrHEY)
+
 ## Characteristics & Features
 
 1. Made using Node.js, Express.js, MongoDB.
