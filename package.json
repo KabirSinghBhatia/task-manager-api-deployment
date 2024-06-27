@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "engines": {
-    "node": ">15.14.0"
+    "node": "15.14.0"
   },
   "scripts": {
-    "start": "NODE_ENV=production node src/index.js",
-    "dev": "NODE_ENV=dev nodemon src/index.js -e js,yaml",
+    "start": "NODE_ENV=prod node src/index.js",
+    "dev": " NODE_ENV=dev nodemon src/index.js -e js,yaml",
     "test": "NODE_ENV=test jest --watch --runInBand"
   },
   "jest": {
@@ -18,23 +18,23 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "argon2": "^0.28.2",
-    "cors": "^2.8.5",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
-    "mongodb": "^3.6.9",
-    "mongoose": "^5.12.13",
-    "multer": "^1.4.2",
-    "sharp": "^0.28.3",
-    "sib-api-v3-sdk": "^8.2.0",
-    "swagger-ui-express": "^4.1.6",
-    "validator": "^13.6.0",
-    "yamljs": "^0.3.0"
+    "argon2": "0.28.2",
+    "cors": "2.8.5",
+    "dotenv": "10.0.0",
+    "express": "4.17.1",
+    "jsonwebtoken": "8.5.1",
+    "mongodb": "3.6.9",
+    "mongoose": "5.12.13",
+    "multer": "1.4.2",
+    "sharp": "0.28.3",
+    "sib-api-v3-sdk": "8.2.0",
+    "swagger-ui-express": "4.1.6",
+    "validator": "13.6.0",
+    "yamljs": "0.3.0"
   },
   "devDependencies": {
-    "jest": "^27.0.6",
-    "nodemon": "^2.0.7",
-    "supertest": "^6.1.4"
+    "jest": "27.0.6",
+    "nodemon": "2.0.7",
+    "supertest": "6.1.4"
   }
 }
